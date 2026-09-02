@@ -196,3 +196,58 @@ Standard workflow:
 This draft does not establish: authoritative release-file classification; pinned repository commit URLs not supplied to this workspace; SAP-only rules not present in the reviewed protocol KBs; or portal behavior not supported by the available training material.
 
 If a request is not covered, check the relevant protocol/MOP/DD directly, then create an unresolved gap rather than infer a definition, field mapping, filter, endpoint, or statistical rule.
+
+## 7. Evaluation-driven navigation additions
+
+The original 15 concepts passed all 20 questions used to derive the Concept Index. Five additional questions were then used to test generalization beyond that development set. The following entries close the partial routes observed in that second test set.
+
+### 16. Lille score / Day-7 treatment rule
+- **Also asked as** Lille / Day-7 Lille / steroid response / prednisone continuation
+- **Defined in** RCT protocol KB § Day 7 Lille Rule
+- **Lives in** DD: `follow_up.lille_score`; verify physical presence and completeness in the RCT follow-up profile before analysis
+- **Rule** use the Day-7 RCT follow-up row and the protocol-defined threshold to determine the prednisone or matching-placebo rule; retain zinc or matching placebo according to the protocol
+- **Trap** a stored Lille value does not independently establish that the correct visit or protocol threshold was used; do not apply this RCT rule to OBS participants
+- **last_verified** 2026-09-02
+
+### 17. infection screen / culture result
+- **Also asked as** infection / sepsis / blood culture / urine culture / organism
+- **Defined in** OBS protocol events of special interest; RCT protocol infection and sepsis outcomes
+- **Lives in** DD `follow_up.infection_screen_done` plus source-specific culture result, organism, and date fields; use the Physical Data Profile to confirm which are materialized and populated
+- **Rule** distinguish whether screening was performed from whether infection was confirmed; interpret the result, organism, and date together
+- **Trap** `infection_screen_done=Yes` is not a positive infection diagnosis, and an empty culture field is not automatically a negative culture
+- **last_verified** 2026-09-02
+
+### 18. hepatic encephalopathy
+- **Also asked as** encephalopathy / HE / liver-related confusion
+- **Defined in** OBS protocol clinical outcomes/events of special interest; RCT protocol outcomes and standard clinical care
+- **Lives in** DD `follow_up.hep_enceph` and `follow_up.hep_enceph_diagnosis_date`
+- **Rule** use the protocol for clinical meaning and the visit-scoped fields for released status and timing
+- **Trap** the DD field describes spontaneous hepatic encephalopathy grade 2 or higher; it is not an any-grade flag
+- **last_verified** 2026-09-02
+
+### 19. specimen shipping and storage
+- **Also asked as** shipment schedule / quarterly shipment / repository / freezer / receiving site
+- **Defined in** protocol KB for collection/shipment expectation; Biorepository MOP KB for operational preparation, temperature, receipt, inventory, deviations, and storage
+- **Lives in** physical specimen records only where a verified shipment/receipt field or table is documented; no universal shipment-event mapping was established in the supplied sources
+- **Rule** use the protocol to answer when shipment is expected and the MOP to answer how it is performed; use the Physical Data Profile only for verified released fields
+- **Trap** a protocol statement that specimens are shipped quarterly does not prove a particular shipment event exists in the release
+- **last_verified** 2026-09-02
+
+### 20. PBMC availability
+- **Also asked as** PBMC collected / PBMC missing / cellular specimen availability
+- **Defined in** protocol biospecimen schedule and MOP PBMC section
+- **Lives in** `aliquot.specimen_type=PBMC` for physical aliquot records in the supplied release
+- **Rule** use protocol/MOP to determine conditional collection and processing; use the Physical Data Profile to quantify actual PBMC records within a named file and denominator
+- **Trap** PBMC collection is limited to selected sites/conditions; absence can be structurally expected and must not automatically be treated as random missingness
+- **last_verified** 2026-09-02
+
+## 8. Validation status
+
+| Test set | Questions | Correct | Partial | Incorrect | Weighted score |
+|---|---:|---:|---:|---:|---:|
+| Development coverage set from `AlcHepNet_Concept_Index_Derivation.md` | 20 | 20 | 0 | 0 | 100% |
+| Independent extension set before additions above | 5 | 0 | 5 | 0 | 50% |
+| Combined initial test | 25 | 20 | 5 | 0 | 90% |
+| Combined retest after additions | 25 | 25 | 0 | 0 | 100% |
+
+**Interpretation:** the first 20 questions verify intended coverage because they were used to derive the original 15 concepts. The five-question extension set provides a limited generalization check. These results measure document-level routing and traceability, not performance of a deployed AI model.
